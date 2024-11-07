@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Set icon
+ICON="󰚇"
+
 # Fetch the first to-do item from 'Today' list
 NEXT_TASK=$(osascript -e 'tell application "Things3" to get name of first to do of list "Today"')
 
@@ -7,7 +10,7 @@ NEXT_TASK=$(osascript -e 'tell application "Things3" to get name of first to do 
 NEXT_TASK=$(echo "$NEXT_TASK" | xargs)
 
 # Set the maximum allowed length
-MAX_LENGTH=40
+MAX_LENGTH=70
 
 # Check if the length of NEXT_TASK is greater than MAX_LENGTH
 if [ ${#NEXT_TASK} -gt $MAX_LENGTH ]; then
@@ -16,14 +19,18 @@ if [ ${#NEXT_TASK} -gt $MAX_LENGTH ]; then
     NEXT_TASK="${NEXT_TASK:0:$TRUNCATED_LENGTH}..."
 fi
 
-# Set icon
-ICON="󰚇"
+# Check if all done
+if [ -z "$NEXT_TASK" ]; then
+    NEXT_TASK="All done"
+    ICON=""
+fi
+
 
 # Ensure the item exists before setting the icon
 if sketchybar --query "$NAME" > /dev/null 2>&1; then
     sketchybar --set "$NAME" \
-     icon="$ICON" \
-     label="$NEXT_TASK"
+                     icon="$ICON" \
+                     label="$NEXT_TASK"
 else
     echo "Item '$NAME' not found"
 fi
